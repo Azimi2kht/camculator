@@ -22,9 +22,3 @@ class BaseTrainer:
     def train(self):
         for epoch in range(1, self.epochs + 1):
             result = self._train_epoch(epoch)
-
-            # log = {"epoch": epoch}
-            # log.update(result)
-
-            # for key, value in log.items():
-            #     self.logger.info("    {:15s}: {}".format(str(key), value))

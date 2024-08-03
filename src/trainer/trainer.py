@@ -26,6 +26,7 @@ class Trainer(BaseTrainer):
         self.model.train()
 
         total_loss = 0.0
+        correct_preds = 0
         for batch_index, (inputs, labels) in enumerate(self.train_loader):
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
@@ -36,19 +37,25 @@ class Trainer(BaseTrainer):
             self.optimizer.step()
 
             total_loss += loss.item()
-        
-        acc = accuracy(outputs, labels)
-        print(f"Epoch: {epoch}, accuracy: {acc}, loss: {total_loss / len(self.train_loader)}")
+
+            correct_preds += accuracy(outputs, labels)
+        acc = correct_preds / len(self.train_loader.dataset)
+        print(
+            f"Epoch: {epoch}, accuracy: {acc}, loss: {total_loss / len(self.train_loader)}"
+        )
 
         if self.valid_loader:
-            self._valid_epoch(epoch)
+            result = self._valid_epoch(epoch)
 
     def _valid_epoch(self, epoch):
         self.model.eval()
 
+        total_loss = 0.0
         with torch.no_grad():
             for batch_index, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
 
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)
+
+                total_loss += loss.item()
