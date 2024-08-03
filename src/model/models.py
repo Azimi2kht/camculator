@@ -1,11 +1,11 @@
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
 
 
-class Model(nn.Module):
+class CamculatorModel(nn.Module):
     def __init__(self):
-        super(Model, self).__init__()
+        super(CamculatorModel, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
