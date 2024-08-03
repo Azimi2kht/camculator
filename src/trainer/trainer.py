@@ -2,6 +2,7 @@ import torch
 from matplotlib import pyplot as plt
 
 from base import BaseTrainer
+from model.metrics import accuracy
 
 
 class Trainer(BaseTrainer):
@@ -35,7 +36,9 @@ class Trainer(BaseTrainer):
             self.optimizer.step()
 
             total_loss += loss.item()
-        print(f"epoch: {epoch}, loss: {total_loss / len(self.train_loader)}")
+        
+        acc = accuracy(outputs, labels)
+        print(f"Epoch: {epoch}, accuracy: {acc}, loss: {total_loss / len(self.train_loader)}")
 
         if self.valid_loader:
             self._valid_epoch(epoch)

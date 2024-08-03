@@ -5,9 +5,9 @@ from torch.optim import Adam
 import model.loss as loss_module
 import model.metrics as metric_module
 import model.models as arch_module
+from data import CamculatorDataLoader
 from trainer import Trainer
 from utils import ConfigParser, load_config
-from data import CamculatorDataLoader
 
 # set the seeds for reproducibility
 SEED = 123
@@ -36,7 +36,7 @@ def main(config):
         config,
         device,
         train_loader=train_loader,
-        valid_loader=valid_loader
+        valid_loader=valid_loader,
     )
 
     trainer.train()

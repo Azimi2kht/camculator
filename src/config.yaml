@@ -18,15 +18,15 @@ arch:
 optimizer:
   type: "Adam"
   args:
-    lr: 0.001
+    lr: 0.008
 
-loss: "ce_loss"
+loss: "nll_loss"
 
 metrics:
   - "accuracy"
 
 trainer:
-  epochs: 10
+  epochs: 50
 
   save_dir: "saved/"
   save_period: 1
