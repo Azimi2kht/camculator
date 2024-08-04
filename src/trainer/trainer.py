@@ -2,7 +2,6 @@ import torch
 from matplotlib import pyplot as plt
 
 from base import BaseTrainer
-from model.metrics import accuracy
 from utils import MetricTracker
 
 
@@ -48,9 +47,15 @@ class Trainer(BaseTrainer):
             self.train_metrics.update("loss", loss.item())
             for metric in self.metrics:
                 self.train_metrics.update(metric.__name__, metric(outputs, labels))
+
+        log = self.train_metrics.result()
         print(f"Epoch: {epoch} - train metrics: ", self.train_metrics.result())
+
         if self.valid_loader:
-            result = self._valid_epoch(epoch)
+            valid_log = self._valid_epoch(epoch)
+            log.update(**{"val_" + k: v for k, v in valid_log.items()})
+
+        return log
 
     def _valid_epoch(self, epoch):
         self.model.eval()
@@ -67,5 +72,8 @@ class Trainer(BaseTrainer):
                 self.valid_metrics.update("loss", loss.item())
                 for metric in self.metrics:
                     self.valid_metrics.update(metric.__name__, metric(outputs, labels))
+
             print(f"Epoch: {epoch} - valid metrics: ", self.valid_metrics.result())
             print("#" * 30)
+        log = self.valid_metrics.result()
+        return log

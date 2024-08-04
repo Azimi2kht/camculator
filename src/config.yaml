@@ -31,4 +31,8 @@ trainer:
   save_dir: "saved/"
   save_period: 1
 
+  monitor_metric: "val_loss"
+
+  early_stop: 5
+
 

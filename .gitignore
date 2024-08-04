@@ -1,5 +1,8 @@
 # data
 data/raw/*
 
+# saved models
+saved
+
 # python
 __pycache__/
