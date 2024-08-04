@@ -26,7 +26,7 @@ metrics:
   - "accuracy"
 
 trainer:
-  epochs: 50
+  epochs: 10
 
   save_dir: "saved/"
   save_period: 1

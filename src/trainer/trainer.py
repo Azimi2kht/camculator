@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 
 from base import BaseTrainer
 from model.metrics import accuracy
+from utils import MetricTracker
 
 
 class Trainer(BaseTrainer):
@@ -19,14 +20,21 @@ class Trainer(BaseTrainer):
     ):
         super().__init__(model, criterion, metrics, optimizer, config)
         self.device = device
+
         self.train_loader = train_loader
         self.valid_loader = valid_loader
+
+        self.train_metrics = MetricTracker(
+            "loss", *[metric.__name__ for metric in self.metrics]
+        )
+        self.valid_metrics = MetricTracker(
+            "loss", *[metric.__name__ for metric in self.metrics]
+        )
 
     def _train_epoch(self, epoch):
         self.model.train()
 
-        total_loss = 0.0
-        correct_preds = 0
+        self.train_metrics.reset()
         for batch_index, (inputs, labels) in enumerate(self.train_loader):
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
@@ -36,21 +44,18 @@ class Trainer(BaseTrainer):
             loss.backward()
             self.optimizer.step()
 
-            total_loss += loss.item()
-
-            correct_preds += accuracy(outputs, labels)
-        acc = correct_preds / len(self.train_loader.dataset)
-        print(
-            f"Epoch: {epoch}, accuracy: {acc}, loss: {total_loss / len(self.train_loader)}"
-        )
-
+            # update metrics
+            self.train_metrics.update("loss", loss.item())
+            for metric in self.metrics:
+                self.train_metrics.update(metric.__name__, metric(outputs, labels))
+        print(f"Epoch: {epoch} - train metrics: ", self.train_metrics.result())
         if self.valid_loader:
             result = self._valid_epoch(epoch)
 
     def _valid_epoch(self, epoch):
         self.model.eval()
 
-        total_loss = 0.0
+        self.valid_metrics.reset()
         with torch.no_grad():
             for batch_index, (inputs, labels) in enumerate(self.train_loader):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -58,4 +63,9 @@ class Trainer(BaseTrainer):
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)
 
-                total_loss += loss.item()
+                # update metrics
+                self.valid_metrics.update("loss", loss.item())
+                for metric in self.metrics:
+                    self.valid_metrics.update(metric.__name__, metric(outputs, labels))
+            print(f"Epoch: {epoch} - valid metrics: ", self.valid_metrics.result())
+            print("#" * 30)
