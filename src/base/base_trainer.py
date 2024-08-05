@@ -5,6 +5,8 @@ from numpy import inf
 
 
 class BaseTrainer:
+    """Base class for Trainers"""
+
     def __init__(self, model, criterion, metrics, optimizer, config):
         self.config = config
         self.model = model
@@ -14,19 +16,30 @@ class BaseTrainer:
 
         trainer_config = self.config["trainer"]
 
-        self.epochs = trainer_config["epochs"]
+        self.num_epochs = trainer_config["epochs"]
         self.save_period = trainer_config["save_period"]
         self.save_dir = config.save_dir
 
         self.best_result = inf
         self.monitor_metric = trainer_config["monitor_metric"]
+        self.epoch = 1
 
     @abstractmethod
     def _train_epoch(self, epoch):
+        """trains the model one epoch
+
+        Args:
+            epoch (int): the current epoch index
+
+        Raises:
+            NotImplementedError: throws an exception if this method
+            is not implemented in the child classes
+        """
         raise NotImplementedError
 
     def train(self):
-        for epoch in range(1, self.epochs + 1):
+        """the main training logic"""
+        for epoch in range(self.epoch, self.num_epochs + 1):
             result = self._train_epoch(epoch)
 
             log = {"epoch": epoch}
@@ -42,12 +55,11 @@ class BaseTrainer:
                 self._save_checkpoint(epoch, save_best=best)
 
     def _save_checkpoint(self, epoch, save_best=False):
-        """
-        Saving checkpoints
+        """Saves a checkpoint of architecture, epoch, model, optimizer, best_result and config
 
-        :param epoch: current epoch number
-        :param log: logging information of the epoch
-        :param save_best: if True, rename the saved checkpoint to 'model_best.pth'
+        Args:
+            epoch (int): current epoch index
+            save_best (bool, optional): If true, the best model is saved as model_best.pth. Defaults to False.
         """
         arch = type(self.model).__name__
         state = {
@@ -60,9 +72,22 @@ class BaseTrainer:
         }
         filename = str(self.save_dir / "checkpoint-epoch{}.pth".format(epoch))
         torch.save(state, filename)
-        # self.logger.info("Saving checkpoint: {} ...".format(filename))
 
         if save_best:
             best_path = str(self.save_dir / "model_best.pth")
             torch.save(state, best_path)
-            # self.logger.info("Saving current best: model_best.pth ...")
+
+    def _load_checkpoint(self, checkpoint_path):
+        """loads saved checkpoint
+
+        Args:
+            checkpoint_path (str): the path to checkpoint
+        """
+        # TODO: change weights_only to true for security concerns
+        checkpoint = torch.load(checkpoint_path, weights_only=False)
+        self.best_result = checkpoint["monitor_best"]
+        self.epoch = checkpoint["epoch"]
+
+        self.model.load_state_dict(checkpoint["state_dict"])
+
+        self.optimizer.load_state_dict(checkpoint["optimizer"])

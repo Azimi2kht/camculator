@@ -1,20 +1,15 @@
-import numpy as np
 import torch
-from torch.optim import Adam
+from matplotlib import pyplot as plt
+from torchvision.io import ImageReadMode, read_image
 
 import model.loss as loss_module
 import model.metrics as metric_module
 import model.models as arch_module
 from data import CamculatorDataLoader
 from trainer import Trainer
-from utils import ConfigParser, load_config
+from utils import ConfigParser, load_config, set_seed
 
-# set the seeds for reproducibility
-SEED = 123
-torch.manual_seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-np.random.seed(SEED)
+set_seed(42)
 
 
 def main(config):
@@ -39,7 +34,13 @@ def main(config):
         valid_loader=valid_loader,
     )
 
-    trainer.train()
+    # trainer.train()
+    trainer._load_checkpoint("saved/models/camculator/0804_165621/model_best.pth")
+    img = read_image("data/raw/slash-0002.png").to(device=device, dtype=torch.float32).unsqueeze(0)
+    print(img.shape)
+    output = trainer.model(img)
+    pred = torch.argmax(output, dim=1)
+    print(pred)
 
 
 if __name__ == "__main__":

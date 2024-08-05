@@ -1,4 +1,6 @@
+import numpy as np
 import pandas as pd
+import torch
 import yaml
 
 
@@ -7,6 +9,13 @@ def load_config(path):
         config = yaml.safe_load(file)
 
     return config
+
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
 
 
 class MetricTracker:
