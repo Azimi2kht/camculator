@@ -1,5 +1,4 @@
 import torch
-from matplotlib import pyplot as plt
 
 from base import BaseTrainer
 from utils import MetricTracker

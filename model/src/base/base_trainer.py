@@ -55,7 +55,8 @@ class BaseTrainer:
                 self._save_checkpoint(epoch, save_best=best)
 
     def _save_checkpoint(self, epoch, save_best=False):
-        """Saves a checkpoint of architecture, epoch, model, optimizer, best_result and config
+        """Saves a checkpoint of architecture, epoch, model, optimizer, best_result and config,
+        so you can resume training later.
 
         Args:
             epoch (int): current epoch index

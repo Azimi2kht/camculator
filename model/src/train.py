@@ -1,6 +1,5 @@
 import torch
-from matplotlib import pyplot as plt
-from torchvision.io import ImageReadMode, read_image
+from torchvision.io import read_image
 
 import model.loss as loss_module
 import model.metrics as metric_module
@@ -12,8 +11,7 @@ from utils import ConfigParser, load_config, set_seed
 set_seed(42)
 
 
-def main(config):
-
+def get_trainer_settings(config):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = config.init_obj("arch", arch_module)
     model = model.to(device)
@@ -23,24 +21,26 @@ def main(config):
     criterion = getattr(loss_module, config["loss"])
     train_loader, valid_loader = CamculatorDataLoader(config["data"]).get_train_valid()
 
-    trainer = Trainer(
-        model,
-        criterion,
-        metrics,
-        optimizer,
-        config,
-        device,
-        train_loader=train_loader,
-        valid_loader=valid_loader,
-    )
+    trainer_settings = {
+        "model": model,
+        "criterion": criterion,
+        "metrics": metrics,
+        "optimizer": optimizer,
+        "config": config,
+        "device": device,
+        "train_loader": train_loader,
+        "valid_loader": valid_loader,
+    }
+    return trainer_settings
 
-    # trainer.train()
-    trainer._load_checkpoint("saved/models/camculator/0804_165621/model_best.pth")
-    img = read_image("data/raw/slash-0002.png").to(device=device, dtype=torch.float32).unsqueeze(0)
-    print(img.shape)
-    output = trainer.model(img)
-    pred = torch.argmax(output, dim=1)
-    print(pred)
+
+def main(config):
+    settings = get_trainer_settings(config)
+
+    trainer = Trainer(**settings)
+
+    trainer.train()
+    
 
 
 if __name__ == "__main__":
