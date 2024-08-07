@@ -1,7 +1,7 @@
 import torch
 
-from base import BaseTrainer
-from utils import MetricTracker
+from src.base import BaseTrainer
+from src.utils import MetricTracker
 
 
 class Trainer(BaseTrainer):

@@ -53,6 +53,10 @@ class BaseTrainer:
 
             if epoch % self.save_period == 0:
                 self._save_checkpoint(epoch, save_best=best)
+        self.save_model()
+
+    def save_model(self):
+        torch.save(self.model.state_dict(), self.save_dir.parent / "model.pth")
 
     def _save_checkpoint(self, epoch, save_best=False):
         """Saves a checkpoint of architecture, epoch, model, optimizer, best_result and config,
@@ -75,7 +79,7 @@ class BaseTrainer:
         torch.save(state, filename)
 
         if save_best:
-            best_path = str(self.save_dir / "model_best.pth")
+            best_path = str(self.save_dir / "checkpoint-best-model.pth")
             torch.save(state, best_path)
 
     def _load_checkpoint(self, checkpoint_path):

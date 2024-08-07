@@ -2,7 +2,7 @@ name: "camculator"
 
 # data settings
 data:
-  data_dir: "./data/raw"
+  data_dir: "./model/data/raw"
   valid_split_ratio: 0.2
   data_loader:
     args:
@@ -26,9 +26,9 @@ metrics:
   - "accuracy"
 
 trainer:
-  epochs: 50
+  epochs: 60
 
-  save_dir: "saved/"
+  save_dir: "model/saved/"
   save_period: 1
 
   monitor_metric: "val_loss"

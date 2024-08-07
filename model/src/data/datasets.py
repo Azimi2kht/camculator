@@ -1,8 +1,9 @@
 from glob import glob
 from re import findall
 
+import cv2
+from matplotlib import pyplot as plt
 from torch.utils.data import Dataset
-from torchvision.io import read_image
 
 labels = {
     "0": 0,
@@ -27,9 +28,10 @@ labels = {
 
 
 class CamculatorDataset(Dataset):
-    def __init__(self, data_path):
+    def __init__(self, data_path, transform=None):
         self.data_path = data_path
         self.glob = glob(self.data_path + "/*")
+        self.transform = transform
 
     def __len__(self):
         return len(self.glob)
@@ -42,6 +44,9 @@ class CamculatorDataset(Dataset):
 
         label = labels[symbol]
 
-        img = read_image(img_path) / 255.0
+        image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        if self.transform:
+            aug = self.transform(image=image)
+            image = aug["image"]
 
-        return img, label
+        return image, label

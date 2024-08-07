@@ -5,7 +5,7 @@ from functools import partial, reduce
 from operator import getitem
 from pathlib import Path
 
-from utils.utils import load_config
+from src.utils.utils import load_config
 
 
 class ConfigParser:

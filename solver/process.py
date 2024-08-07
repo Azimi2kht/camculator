@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 IMG_SIZE = 200
 MODEL_INPUT_SIZE = 28
+OFFSET = 5
 
 
 def pad_image(image, target_size):
@@ -56,7 +57,7 @@ def get_bounding_boxes(image, display=False):
     chars = []
     for x, y, w, h in bounding_boxes:
         if (w >= 2 and w <= 150) and (h >= 2 and h <= 120):
-            roi = image[y : y + h, x : x + w]
+            roi = image[y - OFFSET: y + h + OFFSET, x - OFFSET : x + w + OFFSET]
 
             _, thresh = cv2.threshold(roi, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
             padded = pad_image(thresh, MODEL_INPUT_SIZE)
