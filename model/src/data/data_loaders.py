@@ -1,4 +1,5 @@
 import albumentations as A
+import cv2
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import DataLoader, random_split
 
@@ -11,7 +12,14 @@ class CamculatorDataLoader:
             [
                 A.RandomBrightnessContrast(p=0.5),
                 A.RandomGamma(),
-                A.GaussianBlur(),
+                A.GaussianBlur(p=0.8),
+                A.ShiftScaleRotate(
+                    shift_limit=(-0.0625, 0.0625),
+                    scale_limit=(-0.8, 0),
+                    rotate_limit=(0, 0),
+                    border_mode=cv2.BORDER_CONSTANT,
+                    value=1,
+                ),
                 A.ToFloat(),
                 ToTensorV2(),
             ]

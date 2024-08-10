@@ -117,7 +117,7 @@ def main(config):
 
     trainer = Trainer(**settings)
 
-    # trainer.train()
+    trainer.train()
 
     ################ to be removed
     # trainer._load_checkpoint(
