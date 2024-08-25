@@ -1,9 +1,7 @@
 import torch
-
+from matplotlib import pyplot as plt
 from src.base import BaseTrainer
 from src.utils import MetricTracker
-import cv2
-from matplotlib import pyplot as plt
 
 
 class Trainer(BaseTrainer):
@@ -77,15 +75,5 @@ class Trainer(BaseTrainer):
             print(f"Epoch: {epoch} - valid metrics: ", self.valid_metrics.result())
             print("#" * 30)
 
-        ### to be removed
-        image = cv2.imread("./model/data/5.png", cv2.IMREAD_GRAYSCALE)
-        # predict:
-        batch = torch.tensor(image, dtype=torch.float32, device="cuda").unsqueeze(0).unsqueeze(0)
-        print(batch.shape, batch.dtype)
-        pred = self.model(batch)
-        output = torch.argmax(pred, dim=1)
-        # print(output)
-        print(output)
-        #### tobe removed
         log = self.valid_metrics.result()
         return log
