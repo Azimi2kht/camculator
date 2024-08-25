@@ -2,6 +2,8 @@
 # Classification Model
 Custom CNN model to be used in OCR system. I utilized dataset from [bhmsds's Repo](https://github.com/wblachowski/bhmsds). This model achieved an accuracy of `%98.2` on the test set of the dataset (splitted with fixed seed for reproducibility).
 
+[Model Architecture](https://github.com/user-attachments/assets/745d3c8b-53ec-4265-acaa-36e0ccff6fc9)
+
 ## Installation
 you can install the packages needed with `conda` by using [`requirements.txt`](https://github.com/Azimi2kht/camculator/blob/master/requirements.txt).
 
